@@ -12,7 +12,6 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center" />
 
-
   <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -24,7 +23,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:text="A Network error occurred"
+      android:text="@string/network_error"
       android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
@@ -32,18 +31,15 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:text="Try again?" />
-
-
+      android:text="@string/try_again" />
   </LinearLayout>
-
 
   <TextView
     android:id="@+id/jokeTextView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_margin="12dp"
+    android:layout_margin="@dimen/activity_horizontal_margin"
     android:gravity="center"
     android:textAppearance="?android:attr/textAppearanceLarge" />
 

@@ -4,5 +4,7 @@
   <string name="app_name">Chuck Norris Joke</string>
   <string name="hello_world">Hello world!</string>
   <string name="action_settings">Settings</string>
+  <string name="network_error">A Network error occurred</string>
+  <string name="try_again">Try again?</string>
 
 </resources>

@@ -89,10 +89,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   }
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {
-    int id = item.getItemId();
-
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_refresh) {
+    if (item.getItemId() == R.id.action_refresh) {
       joke = null;
       getRandomJoke();
       return true;
