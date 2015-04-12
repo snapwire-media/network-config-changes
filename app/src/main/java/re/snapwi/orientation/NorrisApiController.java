@@ -10,11 +10,11 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class NorrisApiController {
+@Singleton public class NorrisApiController {
   private NorrisApi api;
   private EventBus bus;
 
-  @Inject @Singleton public NorrisApiController(NorrisApi api, EventBus bus) {
+  @Inject public NorrisApiController(NorrisApi api, EventBus bus) {
     this.api = api;
     this.bus = bus;
     bus.register(this);
