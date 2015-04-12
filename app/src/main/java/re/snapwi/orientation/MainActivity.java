@@ -8,28 +8,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
-import de.greenrobot.event.EventBus;
 import javax.inject.Inject;
-import re.snapwi.orientation.event.JokeEvent;
 import re.snapwi.orientation.io.Joke;
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+import static android.view.View.OnClickListener;
+import static re.snapwi.orientation.JokePresenter.JokeListener;
+import static re.snapwi.orientation.JokePresenter.JokeModule;
+
+public class MainActivity extends ActionBarActivity implements OnClickListener, JokeListener {
   private static final String FLIPPER = "FLipperStateKey";
-  private static final String JOKE = "JokeKey";
 
   private ViewFlipper flipper;
   private TextView jokeTextView;
 
-  private Joke joke;
-  private boolean isLoadingJoke;
-
-  @Inject EventBus bus;
+  @Inject JokePresenter presenter;
 
   @Override protected void onCreate(Bundle savedState) {
     super.onCreate(savedState);
     setContentView(R.layout.activity_main);
 
-    ((App) getApplication()).getAppComponent().inject(this);
+    ((App) getApplication()).appComponent().plus(new JokeModule(this)).inject(this);
 
     jokeTextView = (TextView) findViewById(R.id.jokeTextView);
     flipper = (ViewFlipper) findViewById(R.id.mainFlipper);
@@ -37,55 +35,24 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     if (savedState != null) {
       flipper.setDisplayedChild(savedState.getInt(FLIPPER, 0));
-      joke = savedState.getParcelable(JOKE);
     }
 
-    if (joke != null) {
-      bindJoke();
-    }
+    presenter.restoreState(savedState);
   }
 
   @Override protected void onResume() {
     super.onResume();
-    /** Register first since sticky events are delivered right away if available. */
-    bus.registerSticky(this);
-
-    if (joke == null && !isLoadingJoke) {
-      getRandomJoke();
-    }
+    presenter.onResume();
   }
 
   @Override protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putParcelable(JOKE, joke);
     outState.putInt(FLIPPER, flipper.getDisplayedChild());
-  }
-
-  public void onEventMainThread(JokeEvent event) {
-    if (event.hasError()) {
-      flipper.setDisplayedChild(1);
-    } else {
-      joke = event.getJoke();
-      bindJoke();
-      flipper.setDisplayedChild(2);
-    }
-
-    isLoadingJoke = false;
-    bus.removeStickyEvent(event);
-  }
-
-  private void bindJoke() {
-    jokeTextView.setText(Html.fromHtml(joke.getJoke()));
-  }
-
-  private void getRandomJoke() {
-    flipper.setDisplayedChild(0);
-    isLoadingJoke = true;
-    bus.post(new NorrisApiController.GetRandomJokeEvent());
+    presenter.saveState(outState);
   }
 
   @Override protected void onPause() {
-    bus.unregister(this);
+    presenter.onPause();
     super.onPause();
   }
 
@@ -96,8 +63,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {
     if (item.getItemId() == R.id.action_refresh) {
-      joke = null;
-      getRandomJoke();
+      presenter.getRandomJoke();
       return true;
     }
 
@@ -105,6 +71,19 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   }
 
   @Override public void onClick(View v) {
-    getRandomJoke();
+    presenter.getRandomJoke();
+  }
+
+  @Override public void onJokeLoaded(Joke joke) {
+    jokeTextView.setText(Html.fromHtml(joke.getJoke()));
+    flipper.setDisplayedChild(2);
+  }
+
+  @Override public void onFailed() {
+    flipper.setDisplayedChild(1);
+  }
+
+  @Override public void onStartedLoading() {
+    flipper.setDisplayedChild(0);
   }
 }
