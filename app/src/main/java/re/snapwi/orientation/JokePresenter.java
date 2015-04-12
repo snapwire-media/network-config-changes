@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import re.snapwi.orientation.di.PerActivity;
 import re.snapwi.orientation.event.JokeEvent;
 import re.snapwi.orientation.io.Joke;
+import re.snapwi.orientation.ui.MainActivity;
 
 public class JokePresenter {
 

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'kotlin-android'
 
 android {
   compileSdkVersion 22
@@ -23,6 +24,11 @@ android {
   lintOptions {
     abortOnError false
   }
+
+  sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+    androidTest.java.srcDirs += 'src/androidTest/kotlin'
+  }
 }
 
 dependencies {
@@ -39,4 +45,6 @@ dependencies {
 
   compile 'com.github.frankiesardo:icepick:2.3.6'
   apt 'com.github.frankiesardo:icepick-processor:2.3.6'
+
+  compile "org.jetbrains.kotlin:kotlin-stdlib:0.11.91.1"
 }
