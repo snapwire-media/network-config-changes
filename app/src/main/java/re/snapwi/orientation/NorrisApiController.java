@@ -1,6 +1,7 @@
 package re.snapwi.orientation;
 
 import de.greenrobot.event.EventBus;
+import javax.inject.Inject;
 import re.snapwi.orientation.event.JokeEvent;
 import re.snapwi.orientation.io.Joke;
 import re.snapwi.orientation.rest.NorrisApi;
@@ -12,7 +13,7 @@ public class NorrisApiController {
   private NorrisApi api;
   private EventBus bus;
 
-  public NorrisApiController(NorrisApi api, EventBus bus) {
+  @Inject public NorrisApiController(NorrisApi api, EventBus bus) {
     this.api = api;
     this.bus = bus;
     bus.register(this);

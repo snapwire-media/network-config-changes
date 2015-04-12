@@ -1,19 +1,23 @@
 package re.snapwi.orientation;
 
 import android.app.Application;
-import de.greenrobot.event.EventBus;
-import re.snapwi.orientation.rest.NorrisApi;
-import retrofit.RestAdapter;
+import javax.inject.Inject;
+import re.snapwi.orientation.di.AppComponent;
+import re.snapwi.orientation.di.DaggerAppComponent;
 
 public class App extends Application {
-  private static final String API_URL = "http://api.icndb.com/jokes";
-  private NorrisApiController controller;
+
+  @Inject NorrisApiController controller;
+  private AppComponent appComponent;
 
   @Override public void onCreate() {
     super.onCreate();
 
-    RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(API_URL).build();
-    NorrisApi api = restAdapter.create(NorrisApi.class);
-    controller = new NorrisApiController(api, EventBus.getDefault());
+    appComponent = DaggerAppComponent.create();
+    appComponent.inject(this);
+  }
+
+  public AppComponent getAppComponent() {
+    return appComponent;
   }
 }

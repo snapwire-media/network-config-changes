@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 import de.greenrobot.event.EventBus;
+import javax.inject.Inject;
 import re.snapwi.orientation.event.JokeEvent;
 import re.snapwi.orientation.io.Joke;
 
@@ -22,9 +23,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   private Joke joke;
   private boolean isLoadingJoke;
 
+  @Inject EventBus bus;
+
   @Override protected void onCreate(Bundle savedState) {
     super.onCreate(savedState);
     setContentView(R.layout.activity_main);
+
+    ((App) getApplication()).getAppComponent().inject(this);
+
     jokeTextView = (TextView) findViewById(R.id.jokeTextView);
     flipper = (ViewFlipper) findViewById(R.id.mainFlipper);
     findViewById(R.id.tryAgainButton).setOnClickListener(this);
@@ -42,7 +48,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   @Override protected void onResume() {
     super.onResume();
     /** Register first since sticky events are delivered right away if available. */
-    EventBus.getDefault().registerSticky(this);
+    bus.registerSticky(this);
 
     if (joke == null && !isLoadingJoke) {
       getRandomJoke();
@@ -65,7 +71,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
     isLoadingJoke = false;
-    EventBus.getDefault().removeStickyEvent(event);
+    bus.removeStickyEvent(event);
   }
 
   private void bindJoke() {
@@ -75,11 +81,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   private void getRandomJoke() {
     flipper.setDisplayedChild(0);
     isLoadingJoke = true;
-    EventBus.getDefault().post(new NorrisApiController.GetRandomJokeEvent());
+    bus.post(new NorrisApiController.GetRandomJokeEvent());
   }
 
   @Override protected void onPause() {
-    EventBus.getDefault().unregister(this);
+    bus.unregister(this);
     super.onPause();
   }
 
