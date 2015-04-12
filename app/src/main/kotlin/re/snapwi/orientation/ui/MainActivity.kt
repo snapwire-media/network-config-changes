@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.ViewFlipper
+import butterknife.bindView
 import re.snapwi.orientation.App
 import re.snapwi.orientation.JokePresenter
 import re.snapwi.orientation.R
@@ -15,8 +16,8 @@ import javax.inject.Inject
 
 public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
 
-  var flipper: ViewFlipper? = null
-  var jokeTextView: TextView? = null
+  val flipper: ViewFlipper by bindView(R.id.mainFlipper)
+  val jokeTextView: TextView by bindView(R.id.jokeTextView)
 
   var presenter: JokePresenter? = null
     [Inject] set
@@ -24,16 +25,12 @@ public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
   override fun onCreate(savedState: Bundle?) {
     super<ActionBarActivity>.onCreate(savedState)
     setContentView(R.layout.activity_main)
+    (getApplication() as App).appComponent().plus(JokePresenter.JokeModule(this)).inject(this)
 
-    (getApplication() as App).appComponent().plus(
-        JokePresenter.JokeModule(this)).inject(this)
-
-    jokeTextView = findViewById(R.id.jokeTextView) as TextView
-    flipper = findViewById(R.id.mainFlipper) as ViewFlipper
     findViewById(R.id.tryAgainButton).setOnClickListener({ presenter?.getRandomJoke() })
 
     if (savedState != null) {
-      flipper!!.setDisplayedChild(savedState.getInt(FLIPPER, 0))
+      flipper.setDisplayedChild(savedState.getInt(FLIPPER, 0))
     }
 
     presenter?.restoreState(savedState)
@@ -46,7 +43,7 @@ public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
 
   override fun onSaveInstanceState(outState: Bundle) {
     super<ActionBarActivity>.onSaveInstanceState(outState)
-    outState.putInt(FLIPPER, flipper!!.getDisplayedChild())
+    outState.putInt(FLIPPER, flipper.getDisplayedChild())
     presenter?.saveState(outState)
   }
 
@@ -70,16 +67,16 @@ public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
   }
 
   override fun onJokeLoaded(joke: Joke) {
-    jokeTextView!!.setText(Html.fromHtml(joke.getJoke()))
-    flipper!!.setDisplayedChild(2)
+    jokeTextView.setText(Html.fromHtml(joke.getJoke()))
+    flipper.setDisplayedChild(2)
   }
 
   override fun onFailed() {
-    flipper!!.setDisplayedChild(1)
+    flipper.setDisplayedChild(1)
   }
 
   override fun onStartedLoading() {
-    flipper!!.setDisplayedChild(0)
+    flipper.setDisplayedChild(0)
   }
 
   companion object {
