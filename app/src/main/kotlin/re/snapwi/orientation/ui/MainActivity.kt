@@ -8,47 +8,45 @@ import android.view.MenuItem
 import android.widget.TextView
 import android.widget.ViewFlipper
 import butterknife.bindView
-import re.snapwi.orientation.App
-import re.snapwi.orientation.JokePresenter
+import re.snapwi.orientation.ui.JokePresenter
 import re.snapwi.orientation.R
+import re.snapwi.orientation.di.JokeModule
 import re.snapwi.orientation.io.Joke
+import re.snapwi.orientation.util.getAppComponent
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
-
   val flipper: ViewFlipper by bindView(R.id.mainFlipper)
   val jokeTextView: TextView by bindView(R.id.jokeTextView)
 
-  var presenter: JokePresenter? = null
+  var presenter: JokePresenter by Delegates.notNull()
     [Inject] set
 
-  override fun onCreate(savedState: Bundle?) {
-    super<ActionBarActivity>.onCreate(savedState)
+  override fun onCreate(state: Bundle?) {
+    super<ActionBarActivity>.onCreate(state)
     setContentView(R.layout.activity_main)
-    (getApplication() as App).appComponent().plus(JokePresenter.JokeModule(this)).inject(this)
+    getAppComponent().plus(JokeModule(this)).inject(this)
 
-    findViewById(R.id.tryAgainButton).setOnClickListener({ presenter?.getRandomJoke() })
+    findViewById(R.id.tryAgainButton).setOnClickListener({ presenter.getRandomJoke() })
 
-    if (savedState != null) {
-      flipper.setDisplayedChild(savedState.getInt(FLIPPER, 0))
-    }
-
-    presenter?.restoreState(savedState)
+    flipper.setDisplayedChild(if (state == null) 0 else state.getInt(FLIPPER))
+    presenter.restoreState(state ?: Bundle())
   }
 
   override fun onResume() {
     super<ActionBarActivity>.onResume()
-    presenter?.onResume()
+    presenter.onResume()
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
     super<ActionBarActivity>.onSaveInstanceState(outState)
     outState.putInt(FLIPPER, flipper.getDisplayedChild())
-    presenter?.saveState(outState)
+    presenter.saveState(outState)
   }
 
   override fun onPause() {
-    presenter?.onPause()
+    presenter.onPause()
     super<ActionBarActivity>.onPause()
   }
 
@@ -59,7 +57,7 @@ public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     if (item.getItemId() == R.id.action_refresh) {
-      presenter?.getRandomJoke()
+      presenter.getRandomJoke()
       return true
     }
 
