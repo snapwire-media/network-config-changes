@@ -1,17 +1,22 @@
 buildscript {
+
+  ext {
+    kotlin_version = "0.11.91.4"
+  }
+
   repositories {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:1.1.3'
+    classpath 'com.android.tools.build:gradle:1.2.3'
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.11.91.1'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
 
 allprojects {
   repositories {
     jcenter()
-    maven {url "https://clojars.org/repo/"}
+    maven { url "https://clojars.org/repo/" }
   }
 }

@@ -1,14 +1,13 @@
 package re.snapwi.orientation.ui
 
 import android.os.Bundle
-import android.support.v7.app.ActionBarActivity
+import android.support.v7.app.AppCompatActivity
 import android.text.Html
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.ViewFlipper
 import butterknife.bindView
-import re.snapwi.orientation.ui.JokePresenter
 import re.snapwi.orientation.R
 import re.snapwi.orientation.di.JokeModule
 import re.snapwi.orientation.io.Joke
@@ -16,7 +15,7 @@ import re.snapwi.orientation.util.getAppComponent
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
-public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
+public class MainActivity : AppCompatActivity(), JokePresenter.JokeListener {
   val flipper: ViewFlipper by bindView(R.id.mainFlipper)
   val jokeTextView: TextView by bindView(R.id.jokeTextView)
 
@@ -24,7 +23,7 @@ public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
     [Inject] set
 
   override fun onCreate(state: Bundle?) {
-    super<ActionBarActivity>.onCreate(state)
+    super<AppCompatActivity>.onCreate(state)
     setContentView(R.layout.activity_main)
     getAppComponent().plus(JokeModule(this)).inject(this)
 
@@ -35,19 +34,19 @@ public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
   }
 
   override fun onResume() {
-    super<ActionBarActivity>.onResume()
+    super<AppCompatActivity>.onResume()
     presenter.onResume()
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
-    super<ActionBarActivity>.onSaveInstanceState(outState)
+    super<AppCompatActivity>.onSaveInstanceState(outState)
     outState.putInt(FLIPPER, flipper.getDisplayedChild())
     presenter.saveState(outState)
   }
 
   override fun onPause() {
     presenter.onPause()
-    super<ActionBarActivity>.onPause()
+    super<AppCompatActivity>.onPause()
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -61,7 +60,7 @@ public class MainActivity : ActionBarActivity(), JokePresenter.JokeListener {
       return true
     }
 
-    return super<ActionBarActivity>.onOptionsItemSelected(item)
+    return super<AppCompatActivity>.onOptionsItemSelected(item)
   }
 
   override fun onJokeLoaded(joke: Joke) {

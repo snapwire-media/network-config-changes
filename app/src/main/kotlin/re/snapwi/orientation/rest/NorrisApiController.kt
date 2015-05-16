@@ -9,21 +9,15 @@ import retrofit.client.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
-Singleton public class NorrisApiController
-[Inject] (var api: NorrisApi, var bus: EventBus) {
+Singleton public class NorrisApiController [Inject] (var api: NorrisApi, var bus: EventBus) {
   init {
     bus.register(this)
   }
 
   public fun onEventAsync(event: GetRandomJokeEvent) {
     api.randomJoke(object : Callback<Joke> {
-      override fun success(joke: Joke, response: Response) {
-        bus.postSticky(JokeEvent(joke))
-      }
-
-      override fun failure(error: RetrofitError) {
-        bus.postSticky(JokeEvent(error))
-      }
+      override fun success(joke: Joke, response: Response) = bus.postSticky(JokeEvent(joke))
+      override fun failure(error: RetrofitError) = bus.postSticky(JokeEvent(error))
     })
   }
 
