@@ -1,12 +1,13 @@
 package re.snapwi.orientation.ui
 
 import android.os.Bundle
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
-import android.widget.ViewFlipper
 import butterknife.bindView
 import re.snapwi.orientation.R
 import re.snapwi.orientation.di.JokeModule
@@ -15,8 +16,9 @@ import re.snapwi.orientation.util.getAppComponent
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
-public class MainActivity : AppCompatActivity(), JokePresenter.JokeListener {
-  val flipper: ViewFlipper by bindView(R.id.mainFlipper)
+public class MainActivity : AppCompatActivity(), JokePresenter.JokeListener, SwipeRefreshLayout.OnRefreshListener {
+  val refreshLayout: SwipeRefreshLayout by bindView(R.id.swipeRefreshLayout)
+  val retryLayout: View by bindView(R.id.retryLayout)
   val jokeTextView: TextView by bindView(R.id.jokeTextView)
 
   var presenter: JokePresenter by Delegates.notNull()
@@ -29,8 +31,13 @@ public class MainActivity : AppCompatActivity(), JokePresenter.JokeListener {
 
     findViewById(R.id.tryAgainButton).setOnClickListener({ presenter.getRandomJoke() })
 
-    flipper.setDisplayedChild(if (state == null) 0 else state.getInt(FLIPPER))
+    refreshLayout.setOnRefreshListener(this)
+    refreshLayout.setRefreshing(if (state == null) true else state.getBoolean(LOADING_CONTENT))
     presenter.restoreState(state ?: Bundle())
+  }
+
+  override fun onRefresh() {
+    presenter.getRandomJoke()
   }
 
   override fun onResume() {
@@ -40,7 +47,7 @@ public class MainActivity : AppCompatActivity(), JokePresenter.JokeListener {
 
   override fun onSaveInstanceState(outState: Bundle) {
     super<AppCompatActivity>.onSaveInstanceState(outState)
-    outState.putInt(FLIPPER, flipper.getDisplayedChild())
+    outState.putBoolean(LOADING_CONTENT, refreshLayout.isRefreshing())
     presenter.saveState(outState)
   }
 
@@ -65,18 +72,21 @@ public class MainActivity : AppCompatActivity(), JokePresenter.JokeListener {
 
   override fun onJokeLoaded(joke: Joke) {
     jokeTextView.setText(Html.fromHtml(joke.getJoke()))
-    flipper.setDisplayedChild(2)
+    refreshLayout.setRefreshing(false)
+    retryLayout.setVisibility(View.INVISIBLE)
   }
 
   override fun onFailed() {
-    flipper.setDisplayedChild(1)
+    refreshLayout.setRefreshing(false)
+    retryLayout.setVisibility(View.VISIBLE)
   }
 
   override fun onStartedLoading() {
-    flipper.setDisplayedChild(0)
+    refreshLayout.setRefreshing(true)
+    retryLayout.setVisibility(View.INVISIBLE)
   }
 
   companion object {
-    private val FLIPPER = "FlipperStateKey"
+    private val LOADING_CONTENT = "FlipperStateKey"
   }
 }
