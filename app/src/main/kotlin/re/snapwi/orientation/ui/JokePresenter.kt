@@ -9,7 +9,7 @@ import re.snapwi.orientation.rest.NorrisApiController
 import javax.inject.Inject
 
 public class JokePresenter
-[Inject] [PerActivity] constructor(var bus: EventBus, var listener: JokePresenter.JokeListener) {
+@Inject @PerActivity constructor(var bus: EventBus, var listener: JokePresenter.JokeListener) {
 
   val JOKE_KEY = "JOKE_KEY"
   val LOADING_JOKE_KEY = "LoadingJokeKey"
