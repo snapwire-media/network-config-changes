@@ -20,7 +20,7 @@ public class MainActivity : AppCompatActivity(), JokePresenter.JokeListener {
   val jokeTextView: TextView by bindView(R.id.jokeTextView)
 
   var presenter: JokePresenter by Delegates.notNull()
-    [Inject] set
+    @Inject set
 
   override fun onCreate(state: Bundle?) {
     super<AppCompatActivity>.onCreate(state)

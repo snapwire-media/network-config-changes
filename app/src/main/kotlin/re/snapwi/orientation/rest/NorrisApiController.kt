@@ -9,7 +9,7 @@ import retrofit.client.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
-Singleton public class NorrisApiController [Inject] (var api: NorrisApi, var bus: EventBus) {
+Singleton public class NorrisApiController @Inject constructor(var api: NorrisApi, var bus: EventBus) {
   init {
     bus.register(this)
   }
